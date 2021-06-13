@@ -184,10 +184,10 @@ jsPsych.plugins['resample-learning-2obj'] = (function() {
 			//		fill: "#FFFFFF"
 			//	}, 300,mina.linear, function() {
 	  			  image1.touchstart(function() {
-	  				  inputEvent(image1,trial.audio[0],image2,image3,image4,0);
+	  				  inputEvent(image1,trial.audio[0],image2,0);
 	  			  });
 	  			  image2.touchstart(function() {
-	  				  inputEvent(image2,trial.audio[1],image1,image3,image4,1);
+	  				  inputEvent(image2,trial.audio[1],image1,1);
 	  			  });
 			//	});
 			//});
@@ -198,10 +198,10 @@ jsPsych.plugins['resample-learning-2obj'] = (function() {
   			//		fill: "#FFFFFF"
   			//	}, 300,mina.linear, function() {
 	  			  image1.click(function() {
-	  				  inputEvent(image1,trial.audio[0],image2,image3,image4,0);
+	  				  inputEvent(image1,trial.audio[0],image2,0);
 	  			  });
 	  			  image2.click(function() {
-	  				  inputEvent(image2,trial.audio[1],image1,image3,image4,1);
+	  				  inputEvent(image2,trial.audio[1],image1,1);
 	  			  });
 			//  });
 		  //});

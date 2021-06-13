@@ -1,0 +1,616 @@
+<!doctype html>
+<html>
+
+<head>
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" >
+  	<script src="js/jquery.min.js"></script>
+	<script src="js/jquery-ui.min.js"></script>
+  	<script src="js/snap.svg-min.js"></script> 
+  	<script src="js/jspsych.js"></script>
+	<script src="jspsych-resample-prompt.js"></script>
+	<script src="jspsych-resample-test-2obj.js"></script>
+	<script src="jspsych-resample-sampling-2obj.js"></script>
+  	<script src="jspsych-resample-learning-2obj.js"></script>
+	<script src="jspsych-resample-learning-2items.js"></script>
+	<script src="jspsych-resample-showImage-2obj.js"></script>
+  	<script src="plugins/jspsych-button-response.js"></script>
+    <link rel="stylesheet" href="css/jspsych.css"></link>
+	<link rel="stylesheet" href="css/jquery-ui.css"></link>
+    <link rel="stylesheet" href="css/resample.css"></link>
+</head>
+
+<body>
+  <div id="jspsych-target"></div>
+</body>
+<script>
+	
+$('body,html').addClass('stop-scrolling');
+
+// ORGANIZE SUBJECT ID & GENERAL PARAMETERS
+
+//Enter subject id
+var subject_id = prompt("Enter subject id", "test");
+// var inputType = prompt("Enter input type (touch or click)","touch");
+// var input="";
+// if (inputType=="touch") {
+// 	input="touch";
+// } else {
+// 	input="click";
+// }
+var input="click"
+
+
+// record the condition assignment in the jsPsych data
+var condition = prompt("Condition (active or passive)","active");
+
+
+condition.replace(/[^A-Za-z0-9_]/g, "");
+subject_id.replace(/[^A-Za-z0-9_]/g, "");
+
+// this adds a property called 'subject', a property called workerId, and a condition property
+jsPsych.data.addProperties({
+	subject: subject_id,
+	condition: condition
+});
+
+//general parameters
+var gen_onset_wait = 500;
+var word_rep = 4
+// DEFINE AND RANDOMIZE STIMULI
+
+//familiarization items
+var familiar_words =  ["monkey","penguin"];
+var familiar_objects = ["stims/monkey.png", "stims/penguin.png"];
+
+var familiar_labeling = [];
+for (var i = 0; i < familiar_words.length; i++) {
+	familiar_labeling.push("stims/norm_it_"+familiar_words[i]+".m4a");
+}
+
+//all training  items
+var novel_words = ["beppo","kita","guffi","manu","noopy","pahvy","roozer","sibu","soma","tesser","tibble","zeevo"];
+var novel_objects = ["stims/2.png","stims/8.png","stims/10.png","stims/13.png","stims/17.png","stims/30.png"];
+
+
+//shuffle images and words	
+var novel_words_shuffled=jsPsych.randomization.shuffle(novel_words);
+var novel_objects_shuffled = jsPsych.randomization.shuffle(novel_objects);
+
+var novel_labeling_shuffled=[]
+for (var i = 0; i < novel_words_shuffled.length; i++) {
+	novel_labeling_shuffled.push("stims/norm_it_"+novel_words_shuffled[i]+".m4a");
+}
+
+var all_words = novel_words.concat(familiar_words);
+var all_objects = novel_objects.concat(familiar_objects);
+
+//stim names
+var stimNames = [];
+for (i=0; i<novel_objects_shuffled.length; i++){
+	name = "stim"+ i
+	stimNames.push(name)
+};
+
+//condition_freq
+stim_combos=[[1,2,"1_vs_2",2],[1,3,"1_vs_3",3],[1,4,"1_vs_4",4]]
+
+//associate words and items (images) in a dictionary
+//novel stims
+var stims = {};
+var word_index_start = 0;
+var word_index_end = 0;
+var round = 0
+var total_stims=0;
+var round_stim_names =[];
+var round_stim_objects=[];
+var round_stim_true_words = [];
+var round_stim_true_words_labeling = [];
+var round_stim_true_words_test = [];
+var num_items_per_combo=2;
+for (i =0; i<stim_combos.length; i++) {
+	var stim_true_words = [];
+	var stim_true_words_labeling = [];
+	var stim_true_words_test = [];
+	var cur_round_stims = [];
+	var cur_round_objects=[];
+	cur_stim_combo = stim_combos[i];
+	var round = round + 1;
+	var word_rep = cur_stim_combo[3];
+	cur_round_condition = cur_stim_combo[2];
+	for (j =0; j<num_items_per_combo; j++) {
+		cur_stim_rep=cur_stim_combo[j]
+		word_index_start=word_index_end;
+		word_index_end=word_index_start+cur_stim_rep;
+		cur_unique_words = novel_words_shuffled.slice(word_index_start,word_index_end);
+		cur_diff_word_condition =cur_stim_rep;
+		cur_true_word = novel_words_shuffled[word_index_start]
+		word_list = cur_unique_words;
+		if  (cur_stim_rep == 1) {
+			for (k =0; k<word_rep-1;k++) {
+				word_list.push(cur_true_word);
+			};
+		} 
+		word_list_shuffled = jsPsych.randomization.shuffle(word_list);
+		//convert each item to a dictionary containing the image and the word // use normally
+		curObject = {
+			image: novel_objects_shuffled[total_stims], 
+			word_condition: cur_diff_word_condition,
+			words: cur_unique_words,
+			true_word: cur_true_word,
+			word_list: word_list,
+			word_list_shuffled: word_list_shuffled,
+			round: round,
+			word_rep: word_rep,
+			cur_round_condition: cur_round_condition,
+		};
+		//add this dictionary to the overall stimulus dictionary
+		stims[stimNames[total_stims]] = curObject;
+		stim_true_words.push(cur_true_word);
+		stim_true_words_labeling.push("stims/norm_it_"+cur_true_word+".m4a");
+		stim_true_words_test.push("stims/norm_find_"+cur_true_word+".m4a");	
+		cur_round_stims.push(stimNames[total_stims]);
+		cur_round_objects.push(novel_objects_shuffled[total_stims]);
+		total_stims = total_stims+1;
+	}
+	round_stim_names.push(cur_round_stims);
+	round_stim_true_words.push(stim_true_words);
+	round_stim_true_words_labeling.push(stim_true_words_labeling);
+	round_stim_true_words_test.push(stim_true_words_test);
+	round_stim_objects.push(cur_round_objects);
+	
+};
+
+console.log(stims);
+console.log(round_stim_true_words);
+console.log(round_stim_true_words_labeling);
+console.log(round_stim_true_words_test);
+console.log(round_stim_names);
+console.log(round_stim_objects);
+
+//create complete trial list
+
+//define prompt trial
+var trialPrompt = {
+	type: 'resample-prompt',
+	responseKind: input,
+	data: {trialType: "prompt"}
+};
+
+//Familiarization
+var fam_list =  [];
+fam_list.push(trialPrompt);
+
+//LEARNING
+// to balance where the target is on each trial
+var image_order_list =[0,1];
+
+var fam_learning_trial_num_exp = 2
+var trial_num_exp=1
+for (i = 0; i < fam_learning_trial_num_exp; i++) {
+		
+		var trial_show = {
+			type: 'resample-showImage-2obj',
+			canvas_size: [1024,700],
+			imageOrder: image_order_list,
+			images: familiar_objects,
+			input: input,
+			timing_post_trial: 0,
+			data: {trialNum: trial_num_exp,trialType: "show_fam_learning",phaseTrialNum: i+1},
+		};
+		
+		var trial = {
+			type: 'resample-learning-2obj',
+			canvas_size: [1024,700],
+			condition: "passive",
+			images: familiar_objects,
+			audio: familiar_labeling,
+			onsetWait: gen_onset_wait,
+			targetIndex: i,
+			input: input,
+			timing_post_trial: 0,
+			data: {trialNum: trial_num_exp,trialType: "fam_learning",phaseTrialNum: i+1},
+		};
+		console.log(familiar_labeling[i])
+		
+		if (i==0) {
+		
+			fam_list.push(trial_show);
+		};
+		fam_list.push(trial);
+		trial_num_exp++;
+};
+
+
+fam_list.push(trialPrompt);
+	
+//SAMPLE
+var fam_sample_trials_index = [[0,1]];
+
+for (i = 0; i < fam_sample_trials_index.length; i++) {
+	
+	cur_sample = fam_sample_trials_index[i]
+	
+	if  (condition=="passive") {
+		cur_target = jsPsych.randomization.sample(cur_sample,1)
+	} else {
+		cur_target="NA"
+	}
+		
+	var trial = {
+		type: 'resample-sampling-2obj',
+		canvas_size: [1024,700],
+		condition: condition,
+		images: familiar_objects,
+		audio: familiar_labeling,
+		onsetWait: gen_onset_wait,
+		targetIndex: cur_target,
+		whichImages: cur_sample,
+		input: input,
+		timing_post_trial: 0,
+		data: {trialNum: trial_num_exp,trialType: "fam_sampling",phaseTrialNum: i+1},
+	};
+	fam_list.push(trial);
+	trial_num_exp++;
+};
+
+
+fam_list.push(trialPrompt);
+
+// to balance where the target is on each trial
+var fam_test_trials_index=[0,1];
+var locations_test = [];
+var fam_location_test_list=[0,1];
+
+var fam_test_order_index = jsPsych.randomization.shuffle(fam_test_trials_index);
+
+for (j =0; j < fam_test_order_index.length; j++) {
+
+	cur_index = fam_test_order_index[j];
+	var cur_fam_location_list=jsPsych.randomization.shuffle(fam_location_test_list);
+
+	cur_images = [
+		familiar_objects[cur_fam_location_list[0]],
+		familiar_objects[cur_fam_location_list[1]]
+	];
+
+	cur_words = [
+		familiar_words[cur_fam_location_list[0]],
+		familiar_words[cur_fam_location_list[1]]
+	];
+
+	var test = {
+		type: 'resample-test-2obj',
+		image1: cur_images[0],
+		image2: cur_images[1],
+		curLocationList: cur_fam_location_list,
+		imageList: cur_images,
+		wordList: cur_words,
+		audioStim: "stims/norm_find_" + familiar_words[cur_index] + ".m4a",
+		label: familiar_words[cur_index],
+		targetLocation: cur_index,
+		targetImage: familiar_objects[cur_index],
+    	data: {trialNum: trial_num_exp, trialType: "fam_test",phaseTrialNum: j+1}
+	};
+
+	fam_list.push(test);
+	trial_num_exp++;
+};
+
+
+var trial_list =  [];
+
+
+//randomize round index
+var round_index = [0,1,2];
+var round_index_shuffled=jsPsych.randomization.shuffle(round_index);
+console.log(round_index_shuffled);
+
+
+//cycle through rounds
+for (l=0; l<round_index_shuffled.length;l++) {
+
+	cur_round=round_index_shuffled[l];
+	console.log(cur_round);
+	
+	//set up round  stimuli
+	cur_stim_combo=stim_combos[cur_round]
+	cur_round_stim_names=round_stim_names[cur_round];
+	cur_round_stim_true_words=round_stim_true_words[cur_round];
+	cur_round_stim_true_words_labeling=round_stim_true_words_labeling[cur_round];
+	cur_round_stim_true_words_test=round_stim_true_words_test[cur_round];
+	cur_round_stim_objects=round_stim_objects[cur_round];
+	
+	var word_rep = cur_stim_combo[3];
+	var cur_round_condition = cur_stim_combo[2];
+	
+	//define rocket prompt trial
+	var trialPrompt_rocket = {
+		type: 'resample-prompt',
+		responseKind: input,
+		add_rocket:  true,
+		rocket_counter: 0,
+		num_rockets: word_rep,
+		data: {trialType: "prompt"}
+	};
+	trial_list.push(trialPrompt_rocket);
+	
+	//shuffle
+	var stim_indices=[0,1];
+	cur_stim_shuffle = jsPsych.randomization.shuffle(stim_indices);
+	
+	
+	cur_stim_combo_shuffled= [cur_stim_combo[cur_stim_shuffle[0]],cur_stim_combo[cur_stim_shuffle[1]]]
+	cur_round_stim_names_shuffled = [cur_round_stim_names[cur_stim_shuffle[0]],cur_round_stim_names[cur_stim_shuffle[1]]]
+	cur_round_stim_true_words_shuffled= [cur_round_stim_true_words[cur_stim_shuffle[0]],cur_round_stim_true_words[cur_stim_shuffle[1]]]
+	cur_round_stim_true_words_labeling_shuffled= [cur_round_stim_true_words_labeling[cur_stim_shuffle[0]],cur_round_stim_true_words_labeling[cur_stim_shuffle[1]]]
+	cur_round_stim_true_words_test_shuffled= [cur_round_stim_true_words_test[cur_stim_shuffle[0]],cur_round_stim_true_words_test[cur_stim_shuffle[1]]]
+	cur_round_stim_objects_shuffled= [cur_round_stim_objects[cur_stim_shuffle[0]],cur_round_stim_objects[cur_stim_shuffle[1]]]
+	
+	//LEARNING
+	// to balance which images  are revealed first
+	var image_order_list =[0,1];
+	cur_image_order_list=jsPsych.randomization.shuffle(image_order_list);
+	
+	for (i = 0; i < word_rep; i++) {
+		console.log(i)
+		var block_num = i+1;
+		var stim_order_list=[0,1];
+		cur_stim_order = jsPsych.randomization.shuffle(stim_order_list);
+	
+		cur_words = []
+		for (k=0; k <  cur_round_stim_objects_shuffled.length;k++) {
+			cur_words.push("stims/norm_it_"+stims[cur_round_stim_names_shuffled[k]]["word_list_shuffled"][i]+".m4a")
+		}
+
+		for  (j = 0; j < cur_stim_order.length; j++) {
+			console.log(j)
+		
+			cur_stim_target=cur_stim_order[j]
+			cur_stim_name = cur_round_stim_names_shuffled[cur_stim_target]
+			cur_stim = stims[cur_stim_name]
+
+			cur_true_word  = cur_stim["true_word"];
+			cur_word  = cur_stim["word_list_shuffled"][i];
+			cur_object=cur_stim["image"];
+			cur_word_condition  = cur_stim["word_condition"];
+		  
+			console.log(cur_stim_target);
+			console.log(cur_words);
+			console.log(trial_num_exp);
+			console.log(cur_true_word);
+			console.log(cur_word);
+			if  (cur_true_word ==cur_word) {
+				true_word_trial=1;
+			} else {
+				true_word_trial=0;
+			}
+		
+			console.log("stims/norm_it_" + cur_word  + ".m4a");
+
+			var trial_show = {
+				type: 'resample-showImage-2obj',
+				canvas_size: [1024,700],
+				imageOrder: cur_image_order_list,
+				images: cur_round_stim_objects_shuffled,
+				input: input,
+				add_rocket:  true,
+				rocket_counter: i,
+				num_rockets: word_rep,
+				timing_post_trial: 0,
+				data: {trialNum: trial_num_exp,trialType: "show_learning",phaseTrialNum: i+1,blockNum: block_num, curTrueWord:  cur_true_word, trueWordTrial: true_word_trial, round_condition: cur_round_condition, word_condition: cur_word_condition },
+			};
+
+			var trial = {
+				type: 'resample-learning-2obj',
+				canvas_size: [1024,700],
+				condition: "passive",
+				images: cur_round_stim_objects_shuffled,
+				audio: cur_words,
+				onsetWait: gen_onset_wait,
+				targetIndex: cur_stim_target,
+				input: input,
+				add_rocket:  true,
+				num_rockets: word_rep,
+				rocket_counter: i,
+				timing_post_trial: 0,
+				data: {trialNum: trial_num_exp,trialType: "learning",phaseTrialNum: i+1,blockNum: block_num, curTrueWord:  cur_true_word, trueWordTrial: true_word_trial , round_condition: cur_round_condition, word_condition: cur_word_condition },
+			};
+
+			if (i==0 &&  j==0) {
+
+				trial_list.push(trial_show);
+			};
+			trial_list.push(trial);
+			trial_num_exp++;
+		};
+		
+	};
+	
+
+	//define rocket prompt trial
+	var trialPrompt_rocket = {
+		type: 'resample-prompt',
+		responseKind: input,
+		add_rocket:  true,
+		rocket_counter: block_num,
+		num_rockets: word_rep,
+		data: {trialType: "prompt"}
+	};
+	trial_list.push(trialPrompt_rocket);
+
+	//SAMPLE
+	var all_samples = [[0,1]];
+	var all_samples_shuffled=jsPsych.randomization.shuffle(all_samples);
+	var sample_combos_shuffled =[];
+	for  (j = 0; j < all_samples_shuffled.length; j++) {
+		sample_combos_shuffled.push(jsPsych.randomization.shuffle(all_samples_shuffled[j]));
+	}
+	console.log(sample_combos_shuffled);
+
+	for (i = 0; i < sample_combos_shuffled.length; i++) {
+
+		cur_sample = sample_combos_shuffled[i]
+
+		if  (condition=="passive") {
+			cur_target = jsPsych.randomization.sample(cur_sample,1)
+		} else {
+			cur_target="NA"
+		}
+	
+		word_conditions=[stims[cur_round_stim_names_shuffled[cur_sample[0]]]["word_condition"],stims[cur_round_stim_names_shuffled[cur_sample[1]]]["word_condition"]];
+		true_words=[stims[cur_round_stim_names_shuffled[cur_sample[0]]]["true_word"],stims[cur_round_stim_names_shuffled[cur_sample[1]]]["true_word"]];
+
+		var trial = {
+			type: 'resample-sampling-2obj',
+			canvas_size: [1024,700],
+			condition: condition,
+			images: cur_round_stim_objects_shuffled,
+			audio: cur_round_stim_true_words_labeling_shuffled,
+			onsetWait: gen_onset_wait,
+			targetIndex: cur_target,
+			whichImages: cur_sample,
+			input: input,
+			timing_post_trial: 0,
+			data: {trialNum: trial_num_exp,trialType: "sampling",phaseTrialNum: i+1,word_condition_1: word_conditions[0],word_condition_2:word_conditions[1], true_word_1: true_words[0],true_word_2:true_words[1]},
+		};
+		trial_list.push(trial);
+		trial_num_exp++;
+	};
+
+	trial_list.push(trialPrompt);
+	
+	var test_list_index = [[0,1],[0,1]];
+	var test_blocks_shuffled =[];
+	for  (j = 0; j < test_list_index.length; j++) {
+		test_blocks_shuffled.push(jsPsych.randomization.shuffle(test_list_index[j]));
+	}
+	console.log(test_blocks_shuffled);
+	// to balance where the target is on each trial
+	var location_test_list=[[0,1],[1,0]];
+	var location_test_list_shuffled=jsPsych.randomization.shuffle(location_test_list);
+	
+	var test_trial_num=1;
+
+	for (i  =0; i <  test_blocks_shuffled.length; i++) {
+		cur_test_block = test_blocks_shuffled[i];
+		cur_location_list=location_test_list_shuffled[i];
+		for (j =0; j < cur_test_block.length; j++) {
+
+			cur_index = cur_test_block[j];
+			console.log(cur_index)
+			
+
+			cur_images = [
+				cur_round_stim_objects_shuffled[cur_location_list[0]],
+				cur_round_stim_objects_shuffled[cur_location_list[1]]
+			];
+
+			cur_words = [
+				cur_round_stim_true_words_shuffled[cur_location_list[0]],
+				cur_round_stim_true_words_shuffled[cur_location_list[1]]
+			];
+			
+			cur_words_test= [
+				cur_round_stim_true_words_test_shuffled[cur_location_list[0]],
+				cur_round_stim_true_words_test_shuffled[cur_location_list[1]]
+			];
+
+			var test = {
+				type: 'resample-test-2obj',
+				image1: cur_images[0],
+				image2: cur_images[1],
+				imageList: cur_images,
+				wordList: cur_words,
+				audioStim: cur_words_test[cur_index],
+				label: cur_words[cur_index],
+				targetLocation: cur_index,
+				targetImage: cur_images[cur_index],
+		    	data: {trialNum: trial_num_exp, trialType: "test",phaseTrialNum: test_trial_num}
+			};
+
+			trial_list.push(test);
+			trial_num_exp++;
+			test_trial_num++;
+		};
+	
+	
+	}
+}
+
+
+//construct timeline
+var timeline=fam_list.concat(trial_list);
+
+
+
+
+// PRELOADING
+// this should be handled within the plugins, but I've gotten mixed results relying on this,
+// so to be extra sure, preload all relevant files prior to starting the experiment
+
+ 
+//preload all images
+var image_set = all_objects;
+image_set.push("stims/Bear_Smile.png");
+image_set.push("stims/Bear_Talk.png");
+image_set.push("stims/space_helmet.png");
+
+//preload audio (if audio gets added at some later point)  
+var all_audio = ["stims/bleep.wav","stims/trill.wav"];
+for (var i = 0; i < all_words.length; i++) {
+	all_audio.push("stims/"+all_words[i]+".m4a");
+	all_audio.push("stims/norm_find_"+all_words[i]+".m4a");
+	all_audio.push("stims/norm_it_"+all_words[i]+".m4a");
+};
+
+//all_audio.push("stims/bleep.wav");
+console.log(all_audio);
+ 
+//function for tracking loading of audio files
+//useful if there are a lot of audio files 
+function updateLoadedCount(nLoaded){
+     var percentcomplete = nLoaded / all_audio.length * 100;
+
+     // could put something fancier here, like a progress bar
+     // or updating text in the DOM.
+     console.log('Loaded '+percentcomplete+'% of audio files');
+ }
+
+//run this line instead if we add audio
+jsPsych.pluginAPI.preloadImages(image_set, function(){ jsPsych.pluginAPI.preloadAudioFiles(all_audio, function() {startExperiment(); },function(nLoaded) { updateLoadedCount(nLoaded); });});
+  
+// START & RUN EXPERIMENT
+// including functions that handle storing the data
+
+//function for Javascript-PHP communication
+function saveData(filename, filedata){
+	$.ajax({
+		type:'post',
+		cache: false,
+		url: 'save_data.php', // this is the path to the PHP script for storing the data
+		data: {filename: filename, filedata: filedata}
+	});
+};
+
+//function to initialize the experiment; will be called once all images are preloaded
+function startExperiment(){
+	jsPsych.init({
+		display_element: $('#jspsych-target'),
+		timeline: timeline,
+		show_progress_bar: false,
+		fullscreen: true,
+		default_iti: 0,
+		on_finish: function(data) {
+			//for testing: display data and store locally
+			//jsPsych.data.displayData("csv");
+			//jsPsych.data.localSave("resample_v1_"+subject_id+".csv","csv")
+			//below script is for storing data locally once the experiment is online
+			saveData("resample_v1_"+subject_id+".csv", jsPsych.data.dataAsCSV());
+		}
+	});
+};
+  
+  
+</script>
+
+</html>

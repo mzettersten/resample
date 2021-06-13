@@ -211,49 +211,88 @@ jsPsych.plugins['resample-learning-2obj'] = (function() {
 			rect.touchstart(function() {
 				rect.untouchstart();
 				rect.animate({
-					fill: "#FFFFFF"
-				}, 300,mina.linear, function() {
-				  	if (trial.targetIndex==0) {
-				  		var imTarget=image1;
-				  		var audioTarget=trial.audio[0];
-				  		var im1=image2;
-				  	}
-	
-				  	setTimeout(function() {
-				  		if (trial.targetIndex==0) {
-				  			inputEvent(image1,trial.audio[0],image2,trial.targetIndex);
-				  		} else {
-				  			inputEvent(image2,trial.audio[3],image1,trial.targetIndex);
-				  		};
-		
-				  	}, trial.onsetWait);
-				});
+  					fill: "#FFFFFF"
+  				}, 300,mina.linear);
+				
+			  	if (trial.targetIndex==0) {
+			  		var imTarget=image1;
+			  		var audioTarget=trial.audio[0];
+			  		var im1=image2;
+			  	} else if (trial.targetIndex==1) {
+			  		var imTarget=image2;
+			  		var audioTarget=trial.audio[1];
+			  		var im2=image1;
+			  	}
+				
+		  		if (trial.targetIndex==0) {
+		  			inputEvent(image1,trial.audio[0],image2,trial.targetIndex);
+		  		} else {
+		  			inputEvent(image2,trial.audio[1],image1,trial.targetIndex);
+		  		};
+				
+				// rect.animate({
+// 					fill: "#FFFFFF"
+// 				}, 300,mina.linear, function() {
+// 				  	if (trial.targetIndex==0) {
+// 				  		var imTarget=image1;
+// 				  		var audioTarget=trial.audio[0];
+// 				  		var im1=image2;
+// 				  	}
+//
+// 				  	setTimeout(function() {
+// 				  		if (trial.targetIndex==0) {
+// 				  			inputEvent(image1,trial.audio[0],image2,trial.targetIndex);
+// 				  		} else {
+// 				  			inputEvent(image2,trial.audio[3],image1,trial.targetIndex);
+// 				  		};
+//
+// 				  	}, trial.onsetWait);
+				// });
 			});
 		} else {
   			rect.click(function() {
   				rect.unclick();
-  				rect.animate({
+				rect.animate({
   					fill: "#FFFFFF"
-  				}, 300,mina.linear, function() {
-				  	if (trial.targetIndex==0) {
-				  		var imTarget=image1;
-				  		var audioTarget=trial.audio[0];
-				  		var im1=image2;
-				  	} else if (trial.targetIndex==1) {
-				  		var imTarget=image2;
-				  		var audioTarget=trial.audio[1];
-				  		var im2=image1;
-				  	}
-	
-				  	setTimeout(function() {
-				  		if (trial.targetIndex==0) {
-				  			inputEvent(image1,trial.audio[0],image2,trial.targetIndex);
-				  		} else {
-				  			inputEvent(image2,trial.audio[1],image1,trial.targetIndex);
-				  		};
-		
-				  	}, trial.onsetWait);
-				});
+  				}, 300,mina.linear);
+				
+			  	if (trial.targetIndex==0) {
+			  		var imTarget=image1;
+			  		var audioTarget=trial.audio[0];
+			  		var im1=image2;
+			  	} else if (trial.targetIndex==1) {
+			  		var imTarget=image2;
+			  		var audioTarget=trial.audio[1];
+			  		var im2=image1;
+			  	}
+				
+		  		if (trial.targetIndex==0) {
+		  			inputEvent(image1,trial.audio[0],image2,trial.targetIndex);
+		  		} else {
+		  			inputEvent(image2,trial.audio[1],image1,trial.targetIndex);
+		  		};
+  				// rect.animate({
+//   					fill: "#FFFFFF"
+//   				}, 300,mina.linear, function() {
+// 				  	if (trial.targetIndex==0) {
+// 				  		var imTarget=image1;
+// 				  		var audioTarget=trial.audio[0];
+// 				  		var im1=image2;
+// 				  	} else if (trial.targetIndex==1) {
+// 				  		var imTarget=image2;
+// 				  		var audioTarget=trial.audio[1];
+// 				  		var im2=image1;
+// 				  	}
+//
+// 				  	setTimeout(function() {
+// 				  		if (trial.targetIndex==0) {
+// 				  			inputEvent(image1,trial.audio[0],image2,trial.targetIndex);
+// 				  		} else {
+// 				  			inputEvent(image2,trial.audio[1],image1,trial.targetIndex);
+// 				  		};
+//
+// 				  	}, trial.onsetWait);
+// 				});
 			});
 			  
 		  };

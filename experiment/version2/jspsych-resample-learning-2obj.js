@@ -313,7 +313,7 @@ jsPsych.plugins['resample-learning-2obj'] = (function() {
 		var imCenterX = imageLocations[imChoice][0]+trial.image_size[0]/2;
 		var imCenterY = imageLocations[imChoice][1]+trial.image_size[1]/2;
 		//audioTrill.play();
-		playSound(trial.audioTrill);
+		//playSound(trial.audioTrill);
 		t.rotate(10,imCenterX,imCenterY);
 		im.animate({transform: im.transform(t)},50,mina.easeinout, function() {
 			t.rotate(-20,imCenterX,imCenterY);
@@ -328,7 +328,7 @@ jsPsych.plugins['resample-learning-2obj'] = (function() {
 										im.animate({
 											x: centerLocation[0],
 											y: centerLocation[1]
-										},1000,mina.easeinout,function() {
+										},500,mina.easeinout,function() {
 											// standard.attr({
 // 												href: trial.standardImTalk
 // 											});
@@ -360,10 +360,10 @@ jsPsych.plugins['resample-learning-2obj'] = (function() {
 		
 										bigCircle1.animate({
 											fill: "lightblue"
-										}, 1000);
+										}, 500);
 										bigCircle2.animate({
 											fill: "lightblue"
-										}, 1000);
+										}, 500);
 		
 										im1.animate({
 												opacity: "0"

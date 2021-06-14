@@ -211,14 +211,14 @@ jsPsych.plugins['resample-sampling-2obj'] = (function() {
 		var imCenterY = imageLocations[imChoice][1]+trial.image_size[1]/2;
 		//audioTrill.play();
 		//playSound(trial.audioTrill);
-		t.rotate(10,imCenterX,imCenterY);
-		im.animate({transform: im.transform(t)},50,mina.easeinout, function() {
-			t.rotate(-20,imCenterX,imCenterY);
-			im.animate({transform: im.transform(t)},100,mina.easeinout, function() {
-				t.rotate(20,imCenterX,imCenterY);
-				im.animate({transform: im.transform(t)},100,mina.easeinout, function() {
-					t.rotate(-10,imCenterX,imCenterY);
-					im.animate({transform: im.transform(t)},50,mina.easeinout,function() {
+		// t.rotate(10,imCenterX,imCenterY);
+// 		im.animate({transform: im.transform(t)},50,mina.easeinout, function() {
+// 			t.rotate(-20,imCenterX,imCenterY);
+// 			im.animate({transform: im.transform(t)},100,mina.easeinout, function() {
+// 				t.rotate(20,imCenterX,imCenterY);
+// 				im.animate({transform: im.transform(t)},100,mina.easeinout, function() {
+// 					t.rotate(-10,imCenterX,imCenterY);
+// 					im.animate({transform: im.transform(t)},50,mina.easeinout,function() {
 				        //im.animate({ transform: "r10," + bbox.cx + ',' + bbox.cy}, 100, mina.easeinout,function() {
 						//	im.animate({ transform: "r-20," + bbox.cx + ',' + bbox.cy}, 200,mina.easeinout,function() {
 						//		im.animate({ transform: "r10," + bbox.cx + ',' + bbox.cy}, 100,mina.easeinout, function() {
@@ -266,10 +266,10 @@ jsPsych.plugins['resample-sampling-2obj'] = (function() {
 										im1.animate({
 												opacity: "0"
 											},300);
-					});
-				});
-			});
-		});
+					//});
+					//});
+			//});
+			//});
 	};
 	  
       function endTrial() {

@@ -210,7 +210,7 @@ jsPsych.plugins['resample-sampling-2obj'] = (function() {
 		var imCenterX = imageLocations[imChoice][0]+trial.image_size[0]/2;
 		var imCenterY = imageLocations[imChoice][1]+trial.image_size[1]/2;
 		//audioTrill.play();
-		playSound(trial.audioTrill);
+		//playSound(trial.audioTrill);
 		t.rotate(10,imCenterX,imCenterY);
 		im.animate({transform: im.transform(t)},50,mina.easeinout, function() {
 			t.rotate(-20,imCenterX,imCenterY);

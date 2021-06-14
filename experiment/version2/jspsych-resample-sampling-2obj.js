@@ -209,6 +209,9 @@ jsPsych.plugins['resample-sampling-2obj'] = (function() {
 		console.log(imChoice);
 		var imCenterX = imageLocations[imChoice][0]+trial.image_size[0]/2;
 		var imCenterY = imageLocations[imChoice][1]+trial.image_size[1]/2;
+	    var source = context.createBufferSource(); // creates a sound source
+	    source.buffer = jsPsych.pluginAPI.getAudioBuffer(audio); // tell the source which sound to play
+	    source.connect(context.destination); 
 		//audioTrill.play();
 		//playSound(trial.audioTrill);
 		// t.rotate(10,imCenterX,imCenterY);
@@ -231,7 +234,8 @@ jsPsych.plugins['resample-sampling-2obj'] = (function() {
 											});
 											//audio.play();
 											standardBack.attr({opacity: 0});
-											playSound(audio);
+											//playSound(audio);
+											source.start(0)
 											setTimeout(function() {
 											//	audioTrill.play();
 											//	t.rotate(10,centerLocation[0]+trial.image_size[0]/2,centerLocation[1]+trial.image_size[1]/2);

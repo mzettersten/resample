@@ -583,14 +583,14 @@ jsPsych.pluginAPI.preloadImages(image_set, function(){ jsPsych.pluginAPI.preload
 // including functions that handle storing the data
 
 //function for Javascript-PHP communication
-function saveData(filename, filedata){
-	$.ajax({
-		type:'post',
-		cache: false,
-		url: 'save_data.php', // this is the path to the PHP script for storing the data
-		data: {filename: filename, filedata: filedata}
-	});
-};
+// function saveData(filename, filedata){
+// 	$.ajax({
+// 		type:'post',
+// 		cache: false,
+// 		url: 'save_data.php', // this is the path to the PHP script for storing the data
+// 		data: {filename: filename, filedata: filedata}
+// 	});
+// };
 
 //function to initialize the experiment; will be called once all images are preloaded
 function startExperiment(){
@@ -605,7 +605,20 @@ function startExperiment(){
 			//jsPsych.data.displayData("csv");
 			//jsPsych.data.localSave("resample_v1_"+subject_id+".csv","csv")
 			//below script is for storing data locally once the experiment is online
-			saveData("resample_v1_"+subject_id+".csv", jsPsych.data.dataAsCSV());
+			//saveData("resample_v1_"+subject_id+".csv", jsPsych.data.dataAsCSV());
+			fetch("https://pipe.jspsych.org/api/data/", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Accept: "*/*",
+				},
+				body: JSON.stringify({
+					experimentID: "tj5eAcy69QYV",
+					filename: "resample_v1_"+subject_id+".csv",
+					data: jsPsych.data.dataAsCSV(),
+				}),
+			});
+
 		}
 	});
 };

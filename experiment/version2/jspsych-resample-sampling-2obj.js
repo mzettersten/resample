@@ -157,29 +157,20 @@ jsPsych.plugins['resample-sampling-2obj'] = (function() {
 				rect.untouchstart();
 				rect.animate({
 					fill: "#FFFFFF"
-				}, 300,mina.linear, function() {
-				  	// if (trial.targetIndex==trial.whichImages[0]) {
-				  	// 	var imTarget=image1;
-				  	// 	var audioTarget=trial.audio[trial.whichImages[0]];
-				  	// 	var im1=image2;
-				  	// }
-	
-				  	setTimeout(function() {
-				  		if (trial.targetIndex==trial.whichImages[0]) {
+				}, 300,mina.linear)
+				
+				if (trial.targetIndex==trial.whichImages[0]) {
 				  			inputEvent(image1,trial.audio[trial.whichImages[0]],image2,trial.targetIndex);
-				  		} else if (trial.targetIndex==trial.whichImages[1]) {
-				  			inputEvent(image2,trial.audio[trial.whichImages[1]],image1,trial.targetIndex);
-				  		};
-		
-				  	}, trial.onsetWait);
-				});
+				} else if (trial.targetIndex==trial.whichImages[1]) {
+					inputEvent(image2,trial.audio[trial.whichImages[1]],image1,trial.targetIndex);
+				};
 			});
 		} else {
   			rect.click(function() {
   				rect.unclick();
   				rect.animate({
   					fill: "#FFFFFF"
-  				}, 300,mina.linear, function() {
+  				}, 300,mina.linear)
 				  	// if (trial.targetIndex==0) {
 				  	// 	var imTarget=image1;
 				  	// 	var audioTarget=trial.audio[0];
@@ -188,15 +179,12 @@ jsPsych.plugins['resample-sampling-2obj'] = (function() {
 				  	// 	var im3=image4;
 				  	// }
 	
-				  	setTimeout(function() {
-				  		if (trial.targetIndex==trial.whichImages[0]) {
+				  	if (trial.targetIndex==trial.whichImages[0]) {
 				  			inputEvent(image1,trial.audio[trial.whichImages[0]],image2,trial.targetIndex);
 				  		} else if (trial.targetIndex==trial.whichImages[1]) {
 				  			inputEvent(image2,trial.audio[trial.whichImages[1]],image1,trial.targetIndex);
 				  		};
-		
-				  	}, trial.onsetWait);
-				});
+				
 			});
 			  
 		  };
@@ -221,29 +209,33 @@ jsPsych.plugins['resample-sampling-2obj'] = (function() {
 		console.log(imChoice);
 		var imCenterX = imageLocations[imChoice][0]+trial.image_size[0]/2;
 		var imCenterY = imageLocations[imChoice][1]+trial.image_size[1]/2;
+	    var source = context.createBufferSource(); // creates a sound source
+	    source.buffer = jsPsych.pluginAPI.getAudioBuffer(audio); // tell the source which sound to play
+	    source.connect(context.destination); 
 		//audioTrill.play();
 		//playSound(trial.audioTrill);
-		t.rotate(10,imCenterX,imCenterY);
-		im.animate({transform: im.transform(t)},50,mina.easeinout, function() {
-			t.rotate(-20,imCenterX,imCenterY);
-			im.animate({transform: im.transform(t)},100,mina.easeinout, function() {
-				t.rotate(20,imCenterX,imCenterY);
-				im.animate({transform: im.transform(t)},100,mina.easeinout, function() {
-					t.rotate(-10,imCenterX,imCenterY);
-					im.animate({transform: im.transform(t)},50,mina.easeinout,function() {
+		// t.rotate(10,imCenterX,imCenterY);
+// 		im.animate({transform: im.transform(t)},50,mina.easeinout, function() {
+// 			t.rotate(-20,imCenterX,imCenterY);
+// 			im.animate({transform: im.transform(t)},100,mina.easeinout, function() {
+// 				t.rotate(20,imCenterX,imCenterY);
+// 				im.animate({transform: im.transform(t)},100,mina.easeinout, function() {
+// 					t.rotate(-10,imCenterX,imCenterY);
+// 					im.animate({transform: im.transform(t)},50,mina.easeinout,function() {
 				        //im.animate({ transform: "r10," + bbox.cx + ',' + bbox.cy}, 100, mina.easeinout,function() {
 						//	im.animate({ transform: "r-20," + bbox.cx + ',' + bbox.cy}, 200,mina.easeinout,function() {
 						//		im.animate({ transform: "r10," + bbox.cx + ',' + bbox.cy}, 100,mina.easeinout, function() {
 										im.animate({
 											x: centerLocation[0],
 											y: centerLocation[1]
-										},1000,mina.easeinout,function() {
+										},500,mina.easeinout,function() {
 											standard.attr({
 												href: trial.standardImTalk
 											});
 											//audio.play();
 											standardBack.attr({opacity: 0});
-											playSound(audio);
+											//playSound(audio);
+											source.start(0)
 											setTimeout(function() {
 											//	audioTrill.play();
 											//	t.rotate(10,centerLocation[0]+trial.image_size[0]/2,centerLocation[1]+trial.image_size[1]/2);
@@ -270,18 +262,18 @@ jsPsych.plugins['resample-sampling-2obj'] = (function() {
 		
 										bigCircle1.animate({
 											fill: "lightblue"
-										}, 1000);
+										}, 500);
 										bigCircle2.animate({
 											fill: "lightblue"
-										}, 1000);
+										}, 500);
 		
 										im1.animate({
 												opacity: "0"
 											},300);
-					});
-				});
-			});
-		});
+					//});
+					//});
+			//});
+			//});
 	};
 	  
       function endTrial() {

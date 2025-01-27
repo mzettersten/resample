@@ -41,10 +41,10 @@ var input="click"
 
 
 // record the condition assignment in the jsPsych data
-var condition = prompt("Condition (active or passive)","active");
+//var condition = prompt("Condition (active or passive)","active");
+//condition.replace(/[^A-Za-z0-9_]/g, "");
+var condition = "active"
 
-
-condition.replace(/[^A-Za-z0-9_]/g, "");
 subject_id.replace(/[^A-Za-z0-9_]/g, "");
 
 // this adds a property called 'subject', a property called workerId, and a condition property
@@ -539,7 +539,9 @@ for (l=0; l<round_index_shuffled.length;l++) {
 
 
 //construct timeline
-var timeline=fam_list.concat(trial_list);
+//var timeline=fam_list.concat(trial_list);
+
+var timeline = fam_list;
 
 
 

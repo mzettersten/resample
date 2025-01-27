@@ -604,6 +604,8 @@ function startExperiment(){
 			//jsPsych.data.localSave("resample_v1_"+subject_id+".csv","csv")
 			//below script is for storing data locally once the experiment is online
 			//saveData("resample_v1_"+subject_id+".csv", jsPsych.data.dataAsCSV());
+			console.log(jsPsych.data.dataAsJSON());
+			console.log(jsPsych.data.dataAsCSV())
 			fetch("https://pipe.jspsych.org/api/data/", {
 				method: "POST",
 				headers: {
@@ -613,7 +615,7 @@ function startExperiment(){
 				body: JSON.stringify({
 					experimentID: "tj5eAcy69QYV",
 					filename: "resample_v1_"+subject_id+".csv",
-					data: jsPsych.data.dataAsCSV(),
+					data: jsPsych.data.dataAsJSON(),
 				}),
 			});
 

@@ -10,6 +10,7 @@
 	<script src="jspsych-resample-prompt.js"></script>
 	<script src="jspsych-resample-test-2obj.js"></script>
 	<script src="jspsych-resample-sampling-2obj.js"></script>
+	<script src="jspsych-resample-sampling-showImage-2obj.js"></script>
   	<script src="jspsych-resample-learning-2obj.js"></script>
 	<script src="jspsych-resample-learning-2items.js"></script>
 	<script src="jspsych-resample-showImage-2obj.js"></script>
@@ -235,6 +236,22 @@ for (i = 0; i < fam_sample_trials_index.length; i++) {
 	} else {
 		cur_target="NA"
 	}
+
+	//trial for prompting/ instructions with "secret" trigger
+	var sample_prompt = {
+		type: 'resample-sampling-showImage-2obj',
+		canvas_size: [1024,700],
+		condition: condition,
+		images: familiar_objects,
+		audio: familiar_labeling,
+		onsetWait: gen_onset_wait,
+		targetIndex: cur_target,
+		whichImages: cur_sample,
+		input: input,
+		timing_post_trial: 0,
+		data: {trialNum: trial_num_exp,trialType: "fam_sampling_prompt",phaseTrialNum: i+1},
+	};
+	fam_list.push(sample_prompt);
 		
 	var trial = {
 		type: 'resample-sampling-2obj',
@@ -459,6 +476,21 @@ for (l=0; l<round_index_shuffled.length;l++) {
 	
 		word_conditions=[stims[cur_round_stim_names_shuffled[cur_sample[0]]]["word_condition"],stims[cur_round_stim_names_shuffled[cur_sample[1]]]["word_condition"]];
 		true_words=[stims[cur_round_stim_names_shuffled[cur_sample[0]]]["true_word"],stims[cur_round_stim_names_shuffled[cur_sample[1]]]["true_word"]];
+
+		var sample_prompt = {
+			type: 'resample-sampling-showImage-2obj',
+			canvas_size: [1024,700],
+			condition: condition,
+			images: cur_round_stim_objects_shuffled,
+			audio: cur_round_stim_true_words_labeling_shuffled,
+			onsetWait: gen_onset_wait,
+			targetIndex: cur_target,
+			whichImages: cur_sample,
+			input: input,
+			timing_post_trial: 0,
+			data: {trialNum: trial_num_exp,trialType: "sampling_prompt",phaseTrialNum: i+1,word_condition_1: word_conditions[0],word_condition_2:word_conditions[1], true_word_1: true_words[0],true_word_2:true_words[1]},
+		};
+		trial_list.push(sample_prompt);
 
 		var trial = {
 			type: 'resample-sampling-2obj',
